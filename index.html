@@ -1,0 +1,1218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>Stellar Chimes – Constellation Sequence</title>
+  <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
+  <style>
+    body { margin: 0; overflow: hidden; background: #03050b; }
+    #flashScreen {
+      position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+      background: radial-gradient(ellipse at 50% 40%, #0d1f45 0%, #06091a 50%, #03050b 70%);
+      color: #e0e8ff; display: flex; flex-direction: column;
+      justify-content: center; align-items: center;
+      font-family: 'Georgia', 'Times New Roman', serif;
+      z-index: 999; transition: opacity 2.5s ease;
+    }
+    #flashScreen.fade-out { opacity: 0; pointer-events: none; }
+    #flashScreen h1 {git 
+      font-size: 4.2rem; margin-bottom: 0.5rem; letter-spacing: 0.08em; color: #ffeeaa;
+      text-shadow: 0 0 20px rgba(255,220,120,0.9), 0 0 60px rgba(200,160,80,0.6), 0 0 100px rgba(150,110,40,0.3), 0 0 150px rgba(120,80,20,0.15);
+      animation: starPulse 2.5s ease-in-out infinite;
+    }
+    @keyframes starPulse {
+      0%, 100% { text-shadow: 0 0 20px rgba(255,220,120,0.9), 0 0 60px rgba(200,160,80,0.6), 0 0 100px rgba(150,110,40,0.2); }
+      50% { text-shadow: 0 0 40px rgba(255,230,140,1), 0 0 90px rgba(220,180,100,0.9), 0 0 130px rgba(180,130,60,0.5), 0 0 180px rgba(150,100,30,0.2); }
+    }
+    #flashScreen .subtitle { font-size: 1.4rem; color: #8aaed8; letter-spacing: 0.22em; text-transform: uppercase; margin-bottom: 0.3rem; animation: subtitleGlow 3s ease-in-out infinite; }
+    @keyframes subtitleGlow {
+      0%, 100% { color: #8aaed8; text-shadow: 0 0 10px rgba(120,160,220,0.3); }
+      50% { color: #a0c4f0; text-shadow: 0 0 20px rgba(140,180,255,0.5); }
+    }
+    #flashScreen .divider { width: 260px; height: 1px; margin: 1.2rem 0; background: linear-gradient(90deg, transparent, #4a6a9a, #8ab0e0, #4a6a9a, transparent); animation: dividerPulse 3s ease-in-out infinite; }
+    @keyframes dividerPulse { 0%, 100% { opacity: 0.5; } 50% { opacity: 1; } }
+    #flashScreen .credits { margin-top: 1.5rem; font-size: 0.9rem; color: #4a5a80; letter-spacing: 0.1em; }
+    .splash-stars { position: absolute; width: 100%; height: 100%; pointer-events: none; overflow: hidden; }
+    .splash-star { position: absolute; background: white; border-radius: 50%; animation: twinkle var(--dur) ease-in-out infinite; }
+    @keyframes twinkle { 0%, 100% { opacity: 0.15; transform: scale(1); } 50% { opacity: 1; transform: scale(1.6); } }
+    .shooting-star { position: absolute; width: 80px; height: 1px; background: linear-gradient(90deg, rgba(255,255,255,0.8), transparent); animation: shoot var(--shoot-dur) linear infinite; opacity: 0; }
+    @keyframes shoot { 0% { opacity: 0; transform: translateX(0) translateY(0); } 5% { opacity: 1; } 30% { opacity: 0.6; } 50% { opacity: 0; transform: translateX(300px) translateY(150px); } 100% { opacity: 0; transform: translateX(300px) translateY(150px); } }
+    .nebula-blob { position: absolute; border-radius: 50%; filter: blur(60px); animation: nebulaFloat 8s ease-in-out infinite; }
+    @keyframes nebulaFloat { 0%, 100% { transform: scale(1) translate(0, 0); opacity: 0.15; } 50% { transform: scale(1.15) translate(10px, -10px); opacity: 0.25; } }
+  </style>
+</head>
+<body>
+
+<div id="flashScreen">
+  <div class="splash-stars" id="splashStars"></div>
+  <div class="nebula-blob" style="width:400px;height:400px;background:radial-gradient(circle,rgba(60,80,180,0.4),transparent);top:15%;left:10%;animation-delay:0s;"></div>
+  <div class="nebula-blob" style="width:300px;height:300px;background:radial-gradient(circle,rgba(120,50,160,0.3),transparent);top:50%;right:15%;animation-delay:3s;"></div>
+  <div class="nebula-blob" style="width:250px;height:250px;background:radial-gradient(circle,rgba(40,120,180,0.3),transparent);bottom:20%;left:30%;animation-delay:5s;"></div>
+  <h1>✦ Stellar Chimes ✦</h1>
+  <div class="subtitle">Constellation Sequence</div>
+  <div class="divider"></div>
+  <div class="credits">Samipya Bhattarai &nbsp;•&nbsp; 647809 &nbsp;•&nbsp; CMPT 461</div>
+</div>
+
+<a-scene vr-mode-ui="enabled: true" renderer="antialias: true; colorManagement: true" id="mainScene">
+  <a-assets timeout="10000">
+    <audio id="bgMusic" src="assets/audio/bg_music.mp3" loop preload="auto"></audio>
+    <audio id="buttonClick" src="assets/audio/button_click.mp3" preload="auto"></audio>
+    <audio id="levelStart" src="assets/audio/level_start.mp3" preload="auto"></audio>
+    <audio id="successSound" src="assets/audio/success.mp3" preload="auto"></audio>
+    <audio id="errorSound" src="assets/audio/error.mp3" preload="auto"></audio>
+    <audio id="note1" src="assets/audio/note_do.mp3" preload="auto"></audio>
+    <audio id="note2" src="assets/audio/note_re.mp3" preload="auto"></audio>
+    <audio id="note3" src="assets/audio/note_mi.mp3" preload="auto"></audio>
+    <audio id="note4" src="assets/audio/note_fa.mp3" preload="auto"></audio>
+    <audio id="note5" src="assets/audio/note_sol.mp3" preload="auto"></audio>
+    <audio id="note6" src="assets/audio/note_la.mp3" preload="auto"></audio>
+    <audio id="note7" src="assets/audio/note_si.mp3" preload="auto"></audio>
+    <audio id="note8" src="assets/audio/note_do2.mp3" preload="auto"></audio>
+    <img id="skyBg" src="assets/images/bg_image.jpg" crossorigin="anonymous">
+    <img id="constellationImgCanisMinor" src="assets/images/canis_minor.png" crossorigin="anonymous">
+    <img id="constellationImgApus" src="assets/images/apus.png" crossorigin="anonymous">
+    <img id="constellationImgCrux" src="assets/images/crux.png" crossorigin="anonymous">
+    <img id="constellationImgLynx" src="assets/images/lynx.png" crossorigin="anonymous">
+  </a-assets>
+
+  <a-entity id="player" position="0 1.6 0">
+    <a-camera id="mainCamera" fov="80" near="0.1" far="1000" look-controls="pointerLockEnabled: false">
+      <a-cursor id="gazeCursor" fuse="true" fuse-timeout="1100"
+        raycaster="objects: .clickable; far: 25" color="#ffeeaa" opacity="0.9"
+        geometry="primitive: ring; radiusInner: 0.014; radiusOuter: 0.022"
+        material="shader: flat; color: #ffdd88; opacity: 0.9"
+        animation__scale="property: scale; from: 1 1 1; to: 1.15 1.15 1.15; dur: 800; dir: alternate; loop: true; easing: easeInOutSine">
+        <a-animation attribute="geometry.radiusInner" begin="fusing" end="click" from="0.014" to="0.003" dur="1100" easing="easeInQuad"></a-animation>
+        <a-animation attribute="geometry.radiusInner" begin="mouseleave" from="0.003" to="0.014" dur="200"></a-animation>
+        <a-entity geometry="primitive: ring; radiusInner: 0.024; radiusOuter: 0.032" material="shader: flat; color: #ffcc66; opacity: 0.25; transparent: true"></a-entity>
+      </a-cursor>
+    </a-camera>
+  </a-entity>
+
+  <a-entity light="type: ambient; intensity: 0.4; color: #c0d0f0"></a-entity>
+  <a-entity light="type: directional; intensity: 0.6; color: #fffbe8" position="2 5 3"></a-entity>
+  <a-sky src="#skyBg" rotation="0 -30 0"></a-sky>
+  <a-entity id="ambientParticles"></a-entity>
+  <a-entity id="nebulaDecor">
+    <a-sphere position="-5 4 -12" radius="3" material="shader: flat; color: #1a2a5a; opacity: 0.06; transparent: true; side: double"></a-sphere>
+    <a-sphere position="6 3 -15" radius="4" material="shader: flat; color: #2a1a4a; opacity: 0.05; transparent: true; side: double"></a-sphere>
+    <a-sphere position="-3 5 -18" radius="5" material="shader: flat; color: #0a2040; opacity: 0.04; transparent: true; side: double"></a-sphere>
+    <a-sphere position="4 6 -10" radius="2.5" material="shader: flat; color: #1a3060; opacity: 0.06; transparent: true; side: double"
+      animation="property: position; from: 4 6 -10; to: 4.5 6.3 -10; dur: 6000; dir: alternate; loop: true; easing: easeInOutSine"></a-sphere>
+  </a-entity>
+
+  <!-- ============ MAIN MENU ============ -->
+  <a-entity id="mainMenu" position="0 3 -2.2" visible="true">
+    <a-plane width="3.56" height="2.76" color="#1a3a6a" opacity="0.2" position="0 0 -0.03"
+      animation="property: material.opacity; from: 0.15; to: 0.3; dur: 2000; dir: alternate; loop: true; easing: easeInOutSine"></a-plane>
+    <a-plane width="3.4" height="2.6" color="#060e20" opacity="0.97" position="0 0 -0.02"></a-plane>
+    <a-plane width="3.3" height="2.5" color="#0a1428" opacity="0.95" position="0 0 -0.015"></a-plane>
+    <a-plane width="0.3" height="0.003" color="#4a7aaa" opacity="0.7" position="-1.5 1.22 0"></a-plane>
+    <a-plane width="0.003" height="0.3" color="#4a7aaa" opacity="0.7" position="-1.62 1.1 0"></a-plane>
+    <a-plane width="0.3" height="0.003" color="#4a7aaa" opacity="0.7" position="1.5 1.22 0"></a-plane>
+    <a-plane width="0.003" height="0.3" color="#4a7aaa" opacity="0.7" position="1.62 1.1 0"></a-plane>
+    <a-plane width="0.3" height="0.003" color="#4a7aaa" opacity="0.7" position="-1.5 -1.22 0"></a-plane>
+    <a-plane width="0.003" height="0.3" color="#4a7aaa" opacity="0.7" position="-1.62 -1.1 0"></a-plane>
+    <a-plane width="0.3" height="0.003" color="#4a7aaa" opacity="0.7" position="1.5 -1.22 0"></a-plane>
+    <a-plane width="0.003" height="0.3" color="#4a7aaa" opacity="0.7" position="1.62 -1.1 0"></a-plane>
+
+    <a-text value="✦ Stellar Chimes ✦" align="center" position="0 0.92 0" color="#ffeeaa" width="6.5" font="mozillavr"></a-text>
+    <a-text value="CONSTELLATION SEQUENCE" align="center" position="0 0.56 0" color="#6899cc" width="3.8"></a-text>
+    <a-plane width="2.4" height="0.003" color="#2a4a7a" opacity="0.8" position="0 0.42 0"></a-plane>
+    <a-circle radius="0.012" color="#4a8acc" position="-1.22 0.42 0.001" material="side: double"></a-circle>
+    <a-circle radius="0.012" color="#4a8acc" position="1.22 0.42 0.001" material="side: double"></a-circle>
+    <a-circle radius="0.008" color="#4a8acc" position="0 0.42 0.001" material="side: double"></a-circle>
+
+    <!-- Play button -->
+    <a-plane id="playButton" class="click-disabled" width="2.0" height="0.36" color="#1a5c3a" opacity="0.95" position="0 0.10 0.01" play-game>
+      <a-text value="▶   Play Game" align="center" position="0 0 0.015" color="#ccffdd" width="4.0"></a-text>
+      <a-plane width="2.04" height="0.40" color="#2a8a4a" opacity="0.15" position="0 0 -0.005"
+        animation="property: material.opacity; from: 0.1; to: 0.25; dur: 1500; dir: alternate; loop: true; easing: easeInOutSine"></a-plane>
+    </a-plane>
+
+    <!-- Options button -->
+    <a-plane id="optionsButton" class="click-disabled" width="2.0" height="0.32" color="#1a3560" opacity="0.95" position="0 -0.32 0.01" open-options>
+      <a-text value="⚙  Options" align="center" position="0 0 0.015" color="#aaccff" width="3.6"></a-text>
+      <a-plane width="1.98" height="0.003" color="#3366aa" opacity="0.4" position="0 -0.158 0.005"></a-plane>
+    </a-plane>
+
+    <!-- Quit button -->
+    <a-plane id="quitButton" class="click-disabled" width="1.4" height="0.28" color="#5c1a1a" opacity="0.90" position="0 -0.72 0.01" quit-game>
+      <a-text value="✕  Quit" align="center" position="0 0 0.015" color="#ffbbbb" width="3.0"></a-text>
+    </a-plane>
+
+    <a-text value="Samipya Bhattarai  •  CMPT 461  •  647809" align="center" position="0 -1.05 0" color="#334466" width="2.8"></a-text>
+  </a-entity>
+
+  <!-- ============ OPTIONS PANEL ============ -->
+  <a-entity id="optionsPanel" position="0 3 -2.2" visible="false">
+    <a-plane width="3.56" height="3.06" color="#1a3a6a" opacity="0.2" position="0 0 -0.03"
+      animation="property: material.opacity; from: 0.15; to: 0.3; dur: 2000; dir: alternate; loop: true; easing: easeInOutSine"></a-plane>
+    <a-plane width="3.4" height="2.9" color="#060e20" opacity="0.97" position="0 0 -0.02"></a-plane>
+    <a-plane width="3.3" height="2.8" color="#0a1428" opacity="0.95" position="0 0 -0.015"></a-plane>
+    <!-- Corner accents -->
+    <a-plane width="0.3" height="0.003" color="#4a7aaa" opacity="0.7" position="1.5 1.37 0"></a-plane>
+    <a-plane width="0.003" height="0.3" color="#4a7aaa" opacity="0.7" position="1.62 1.25 0"></a-plane>
+    <a-plane width="0.3" height="0.003" color="#4a7aaa" opacity="0.7" position="-1.5 -1.37 0"></a-plane>
+    <a-plane width="0.003" height="0.3" color="#4a7aaa" opacity="0.7" position="-1.62 -1.25 0"></a-plane>
+    <a-plane width="0.3" height="0.003" color="#4a7aaa" opacity="0.7" position="1.5 -1.37 0"></a-plane>
+    <a-plane width="0.003" height="0.3" color="#4a7aaa" opacity="0.7" position="1.62 -1.25 0"></a-plane>
+
+    <!-- Title -->
+    <a-text value="⚙ Options" align="center" position="0 1.12 0.01" color="#ffeeaa" width="6.0" font="mozillavr"></a-text>
+    <a-plane width="2.4" height="0.003" color="#2a4a7a" opacity="0.8" position="0 0.95 0.01"></a-plane>
+
+    <!-- DIFFICULTY -->
+    <a-text value="DIFFICULTY" align="left" position="-1.35 0.72 0.01" color="#6899cc" width="2.8"></a-text>
+    <a-plane id="optDifficultyToggle" class="clickable" width="1.5" height="0.28" color="#1a5c28" opacity="0.95" position="0.55 0.72 0.01" opt-toggle-difficulty>
+      <a-text id="optDifficultyText" value="🌟 Easy" align="center" position="0 0 0.015" color="#aaffcc" width="3.0"></a-text>
+    </a-plane>
+
+    <!-- Separator -->
+    <a-plane width="2.6" height="0.002" color="#1a2a44" opacity="0.5" position="0 0.50 0.01"></a-plane>
+
+    <!-- BG MUSIC TOGGLE -->
+    <a-text value="BG MUSIC" align="left" position="-1.35 0.32 0.01" color="#6899cc" width="2.8"></a-text>
+    <a-plane id="optMusicToggle" class="clickable" width="1.5" height="0.28" color="#1a3560" opacity="0.95" position="0.55 0.32 0.01" opt-toggle-music>
+      <a-text id="optMusicText" value="Off" align="center" position="0 0 0.015" color="#aaccff" width="3.0"></a-text>
+    </a-plane>
+
+    <!-- Separator -->
+    <a-plane width="2.6" height="0.002" color="#1a2a44" opacity="0.5" position="0 0.10 0.01"></a-plane>
+
+    <!-- VOLUME SLIDER -->
+    <a-text id="volLabel" value="VOLUME" align="left" position="-1.35 -0.10 0.01" color="#6899cc" width="2.8"></a-text>
+    <a-text id="volPercent" value="50%" align="right" position="1.35 -0.10 0.01" color="#ffeeaa" width="2.8"></a-text>
+
+    <!-- Slider track -->
+    <a-entity id="volumeSliderGroup" position="0 -0.36 0.01">
+      <!-- Track bg -->
+      <a-plane width="2.2" height="0.04" color="#0a1428" opacity="0.9" position="0 0 0"></a-plane>
+      <!-- Track fill (will be updated dynamically) -->
+      <a-plane id="volFill" width="1.1" height="0.04" color="#2a6a9a" opacity="0.8" position="-0.55 0 0.002"></a-plane>
+
+      <!-- Tick marks at 25%, 50%, 75%, 100% -->
+      <a-plane width="0.008" height="0.10" color="#4a6a8a" opacity="0.5" position="-0.55 0 0.003"></a-plane>
+      <a-plane width="0.008" height="0.10" color="#4a6a8a" opacity="0.5" position="0 0 0.003"></a-plane>
+      <a-plane width="0.008" height="0.10" color="#4a6a8a" opacity="0.5" position="0.55 0 0.003"></a-plane>
+      <a-plane width="0.008" height="0.10" color="#4a6a8a" opacity="0.5" position="1.1 0 0.003"></a-plane>
+
+      <!-- Tick labels -->
+      <a-text value="25%" align="center" position="-0.55 -0.12 0" color="#4a6a8a" width="1.8"></a-text>
+      <a-text value="50%" align="center" position="0 -0.12 0" color="#4a6a8a" width="1.8"></a-text>
+      <a-text value="75%" align="center" position="0.55 -0.12 0" color="#4a6a8a" width="1.8"></a-text>
+      <a-text value="100%" align="center" position="1.1 -0.12 0" color="#4a6a8a" width="1.8"></a-text>
+
+      <!-- Clickable zones for each stop -->
+      <a-plane class="clickable" width="0.55" height="0.22" position="-0.825 0 0.005" material="opacity: 0; transparent: true" vol-set="level: 25"></a-plane>
+      <a-plane class="clickable" width="0.55" height="0.22" position="-0.275 0 0.005" material="opacity: 0; transparent: true" vol-set="level: 50"></a-plane>
+      <a-plane class="clickable" width="0.55" height="0.22" position="0.275 0 0.005" material="opacity: 0; transparent: true" vol-set="level: 75"></a-plane>
+      <a-plane class="clickable" width="0.55" height="0.22" position="0.825 0 0.005" material="opacity: 0; transparent: true" vol-set="level: 100"></a-plane>
+
+      <!-- Slider knob -->
+      <a-circle id="volKnob" radius="0.06" color="#66aadd" position="0 0 0.006" material="side: double">
+        <a-circle radius="0.035" color="#aaddff" position="0 0 0.003" material="side: double"></a-circle>
+      </a-circle>
+
+      <!-- Greyed-out overlay when music is off -->
+      <a-plane id="volOverlay" width="2.4" height="0.35" color="#060e20" opacity="0.7" position="0 0 0.008" visible="true"></a-plane>
+    </a-entity>
+
+    <!-- Separator -->
+    <a-plane width="2.6" height="0.002" color="#1a2a44" opacity="0.5" position="0 -0.62 0.01"></a-plane>
+
+    <!-- Back to Menu button -->
+    <a-plane id="optBackBtn" class="clickable" width="1.6" height="0.32" color="#1a3560" opacity="0.95" position="0 -0.86 0.01" opt-back-menu>
+      <a-text value="↩  Back to Menu" align="center" position="0 0 0.015" color="#aaccff" width="3.2"></a-text>
+      <a-plane width="1.58" height="0.003" color="#3366aa" opacity="0.4" position="0 -0.158 0.005"></a-plane>
+    </a-plane>
+  </a-entity>
+
+  <!-- ============ GAME DASHBOARD ============ -->
+  <a-entity id="gameDashboard" visible="false">
+    <a-entity position="-3 2.45 -3.2" rotation="0 22 0">
+      <a-plane width="1.6" height="1.1" color="#1a3a6a" opacity="0.15" position="0 0 -0.02"
+        animation="property: material.opacity; from: 0.1; to: 0.2; dur: 2500; dir: alternate; loop: true; easing: easeInOutSine"></a-plane>
+      <a-plane width="1.5" height="1.0" color="#060e20" opacity="0.97" position="0 0 -0.01"></a-plane>
+      <a-plane width="1.44" height="0.94" color="#0a1428" opacity="0.95" position="0 0 -0.005"></a-plane>
+      <a-plane width="0.15" height="0.003" color="#4a7aaa" opacity="0.6" position="-0.68 0.45 0.001"></a-plane>
+      <a-plane width="0.003" height="0.15" color="#4a7aaa" opacity="0.6" position="-0.72 0.41 0.001"></a-plane>
+      <a-plane width="0.15" height="0.003" color="#4a7aaa" opacity="0.6" position="0.68 0.45 0.001"></a-plane>
+      <a-plane width="0.003" height="0.15" color="#4a7aaa" opacity="0.6" position="0.72 0.41 0.001"></a-plane>
+      <a-text value="CONSTELLATION" align="center" position="0 0.34 0.01" color="#6899cc" width="2.6"></a-text>
+      <a-plane width="1.0" height="0.003" color="#2a4a7a" opacity="0.5" position="0 0.24 0.01"></a-plane>
+      <a-text id="refName" value="Canis Minor" align="center" position="0 0.10 0.01" color="#ffeeaa" width="3.0"></a-text>
+      <a-plane id="playSequenceBtn" class="click-disabled" width="1.2" height="0.28" color="#1a3560" opacity="0.95" position="0 -0.26 0.01" play-melody>
+        <a-text value="▶ Play Melody" align="center" position="0 0 0.015" color="#aaccff" width="2.6"></a-text>
+        <a-plane width="1.18" height="0.003" color="#3366aa" opacity="0.4" position="0 -0.138 0.005"></a-plane>
+      </a-plane>
+    </a-entity>
+    <a-entity position="3 2.45 -3.2" rotation="0 -22 0">
+      <a-plane width="1.6" height="1.1" color="#1a3a6a" opacity="0.15" position="0 0 -0.02"
+        animation="property: material.opacity; from: 0.1; to: 0.2; dur: 2500; dir: alternate; loop: true; easing: easeInOutSine; delay: 500"></a-plane>
+      <a-plane width="1.5" height="1.0" color="#060e20" opacity="0.97" position="0 0 -0.01"></a-plane>
+      <a-plane width="1.44" height="0.94" color="#0a1428" opacity="0.95" position="0 0 -0.005"></a-plane>
+      <a-plane width="0.15" height="0.003" color="#4a7aaa" opacity="0.6" position="-0.68 0.45 0.001"></a-plane>
+      <a-plane width="0.003" height="0.15" color="#4a7aaa" opacity="0.6" position="-0.72 0.41 0.001"></a-plane>
+      <a-plane width="0.15" height="0.003" color="#4a7aaa" opacity="0.6" position="0.68 0.45 0.001"></a-plane>
+      <a-plane width="0.003" height="0.15" color="#4a7aaa" opacity="0.6" position="0.72 0.41 0.001"></a-plane>
+      <a-text value="YOUR SEQUENCE" align="center" position="0 0.34 0.01" color="#6899cc" width="2.6"></a-text>
+      <a-plane width="1.0" height="0.003" color="#2a4a7a" opacity="0.5" position="0 0.24 0.01"></a-plane>
+      <a-entity id="trackerContainer" position="0 0.10 0.01"></a-entity>
+      <a-text id="progressText" value="0 / 2" align="center" position="0 -0.13 0.01" color="#ffeeaa" width="3.0"></a-text>
+      <a-plane id="resetBtn" class="click-disabled" width="1.0" height="0.26" color="#3c1818" opacity="0.9" position="0 -0.34 0.01" reset-sequence>
+        <a-text value="↺  Reset" align="center" position="0 0 0.015" color="#ffbbbb" width="2.2"></a-text>
+      </a-plane>
+    </a-entity>
+    <a-entity position="0 4.15 -3.0">
+      <a-plane width="2.2" height="0.7" color="#1a3a6a" opacity="0.15" position="0 0 -0.02"
+        animation="property: material.opacity; from: 0.1; to: 0.2; dur: 2500; dir: alternate; loop: true; easing: easeInOutSine; delay: 250"></a-plane>
+      <a-plane width="2.1" height="0.6" color="#060e20" opacity="0.97" position="0 0 -0.01"></a-plane>
+      <a-plane width="2.04" height="0.54" color="#0a1428" opacity="0.95" position="0 0 -0.005"></a-plane>
+      <a-plane width="0.12" height="0.003" color="#4a7aaa" opacity="0.6" position="-0.98 0.25 0.001"></a-plane>
+      <a-plane width="0.003" height="0.12" color="#4a7aaa" opacity="0.6" position="-1.0 0.23 0.001"></a-plane>
+      <a-plane width="0.12" height="0.003" color="#4a7aaa" opacity="0.6" position="0.98 0.25 0.001"></a-plane>
+      <a-plane width="0.003" height="0.12" color="#4a7aaa" opacity="0.6" position="1.0 0.23 0.001"></a-plane>
+      <a-text id="timerText" value="⏱ 1:00" align="center" position="-0.5 0.08 0.01" color="#ff9966" width="3.5"></a-text>
+      <a-text id="scoreText" value="Score: 0" align="center" position="0.5 0.08 0.01" color="#66ddff" width="3.5"></a-text>
+      <a-text id="totalScoreText" value="Total: 0" align="center" position="0 -0.16 0.01" color="#ffeeaa" width="2.8"></a-text>
+      <a-plane width="0.003" height="0.35" color="#2a4a7a" opacity="0.5" position="0 0.05 0.01"></a-plane>
+    </a-entity>
+  </a-entity>
+
+  <a-entity id="starsContainer" visible="false"></a-entity>
+  <a-entity id="constellationLines" visible="false"></a-entity>
+  <a-entity id="floatingTextContainer"></a-entity>
+
+  <!-- SUCCESS POPUP -->
+  <a-entity id="successPopup" position="0 3 -2.2" visible="false">
+    <a-plane width="3.16" height="2.56" color="#2a6a3a" opacity="0.2" position="0 0 -0.03"
+      animation="property: material.opacity; from: 0.15; to: 0.35; dur: 1500; dir: alternate; loop: true; easing: easeInOutSine"></a-plane>
+    <a-plane width="3.0" height="2.4" color="#060e20" opacity="0.97" position="0 0 -0.02"></a-plane>
+    <a-plane width="2.9" height="2.3" color="#0a1428" opacity="0.95" position="0 0 -0.015"></a-plane>
+    <a-plane width="0.25" height="0.003" color="#aa8833" opacity="0.7" position="-1.38 1.1 0"></a-plane>
+    <a-plane width="0.003" height="0.25" color="#aa8833" opacity="0.7" position="-1.47 1.01 0"></a-plane>
+    <a-plane width="0.25" height="0.003" color="#aa8833" opacity="0.7" position="1.38 1.1 0"></a-plane>
+    <a-plane width="0.003" height="0.25" color="#aa8833" opacity="0.7" position="1.47 1.01 0"></a-plane>
+    <a-plane width="0.25" height="0.003" color="#aa8833" opacity="0.7" position="-1.38 -1.1 0"></a-plane>
+    <a-plane width="0.003" height="0.25" color="#aa8833" opacity="0.7" position="-1.47 -1.01 0"></a-plane>
+    <a-plane width="0.25" height="0.003" color="#aa8833" opacity="0.7" position="1.38 -1.1 0"></a-plane>
+    <a-plane width="0.003" height="0.25" color="#aa8833" opacity="0.7" position="1.47 -1.01 0"></a-plane>
+    <a-text value="✦ Constellation Complete! ✦" align="center" position="0 0.88 0.01" color="#ffeeaa" width="5.5" font="mozillavr"></a-text>
+    <a-plane width="2.0" height="0.003" color="#aa8833" opacity="0.5" position="0 0.72 0.01"></a-plane>
+    <a-image id="popupImage" width="1.3" height="0.85" position="0 0.22 0.01" opacity="0.95"></a-image>
+    <a-text id="popupName" value="" align="center" position="0 -0.28 0.01" color="#aaccff" width="4.0"></a-text>
+    <a-text id="popupScoreText" value="" align="center" position="0 -0.50 0.01" color="#ffeeaa" width="3.5"></a-text>
+    <a-plane id="nextLevelBtn" class="click-disabled" width="1.6" height="0.32" color="#1a5c3a" opacity="0.95" position="0 -0.78 0.01" next-level>
+      <a-text id="nextBtnText" value="Next Level  →" align="center" position="0 0 0.015" color="#ccffdd" width="3.2"></a-text>
+      <a-plane width="1.64" height="0.36" color="#2a8a4a" opacity="0.15" position="0 0 -0.005"
+        animation="property: material.opacity; from: 0.1; to: 0.25; dur: 1200; dir: alternate; loop: true; easing: easeInOutSine"></a-plane>
+    </a-plane>
+  </a-entity>
+
+  <!-- TIME'S UP POPUP -->
+  <a-entity id="timesUpPopup" position="0 3 -2.2" visible="false">
+    <a-plane width="3.16" height="2.16" color="#6a2a2a" opacity="0.2" position="0 0 -0.03"
+      animation="property: material.opacity; from: 0.15; to: 0.35; dur: 1500; dir: alternate; loop: true; easing: easeInOutSine"></a-plane>
+    <a-plane width="3.0" height="2.0" color="#060e20" opacity="0.97" position="0 0 -0.02"></a-plane>
+    <a-plane width="2.9" height="1.9" color="#0a1428" opacity="0.95" position="0 0 -0.015"></a-plane>
+    <a-plane width="0.25" height="0.003" color="#aa3333" opacity="0.7" position="-1.38 0.9 0"></a-plane>
+    <a-plane width="0.003" height="0.25" color="#aa3333" opacity="0.7" position="-1.47 0.81 0"></a-plane>
+    <a-plane width="0.25" height="0.003" color="#aa3333" opacity="0.7" position="1.38 0.9 0"></a-plane>
+    <a-plane width="0.003" height="0.25" color="#aa3333" opacity="0.7" position="1.47 0.81 0"></a-plane>
+    <a-plane width="0.25" height="0.003" color="#aa3333" opacity="0.7" position="-1.38 -0.9 0"></a-plane>
+    <a-plane width="0.003" height="0.25" color="#aa3333" opacity="0.7" position="-1.47 -0.81 0"></a-plane>
+    <a-plane width="0.25" height="0.003" color="#aa3333" opacity="0.7" position="1.38 -0.9 0"></a-plane>
+    <a-plane width="0.003" height="0.25" color="#aa3333" opacity="0.7" position="1.47 -0.81 0"></a-plane>
+    <a-text value="⏱ Time's Up!" align="center" position="0 0.55 0.01" color="#ff6655" width="6.0" font="mozillavr"></a-text>
+    <a-plane width="2.0" height="0.003" color="#aa3333" opacity="0.5" position="0 0.35 0.01"></a-plane>
+    <a-text id="timesUpScoreText" value="Level Score: 0" align="center" position="0 0.10 0.01" color="#ffccaa" width="3.5"></a-text>
+    <a-text id="timesUpTotalText" value="Total Score: 0" align="center" position="0 -0.12 0.01" color="#ffeeaa" width="3.5"></a-text>
+    <a-plane id="timesUpMenuBtn" class="click-disabled" width="1.6" height="0.32" color="#5c1a1a" opacity="0.95" position="0 -0.55 0.01" timesup-menu>
+      <a-text value="↩  Back to Menu" align="center" position="0 0 0.015" color="#ffbbbb" width="3.2"></a-text>
+      <a-plane width="1.64" height="0.36" color="#882222" opacity="0.15" position="0 0 -0.005"
+        animation="property: material.opacity; from: 0.1; to: 0.25; dur: 1200; dir: alternate; loop: true; easing: easeInOutSine"></a-plane>
+    </a-plane>
+  </a-entity>
+
+  <!-- LEADERBOARD POPUP -->
+  <a-entity id="leaderboardPopup" position="0 3 -2.2" visible="false">
+    <a-plane width="3.56" height="3.76" color="#1a3a6a" opacity="0.2" position="0 0 -0.03"
+      animation="property: material.opacity; from: 0.15; to: 0.3; dur: 2000; dir: alternate; loop: true; easing: easeInOutSine"></a-plane>
+    <a-plane width="3.4" height="3.6" color="#060e20" opacity="0.97" position="0 0 -0.02"></a-plane>
+    <a-plane width="3.3" height="3.5" color="#0a1428" opacity="0.95" position="0 0 -0.015"></a-plane>
+    <a-plane width="0.3" height="0.003" color="#aa8833" opacity="0.7" position="-1.5 1.72 0"></a-plane>
+    <a-plane width="0.003" height="0.3" color="#aa8833" opacity="0.7" position="-1.62 1.6 0"></a-plane>
+    <a-plane width="0.3" height="0.003" color="#aa8833" opacity="0.7" position="1.5 1.72 0"></a-plane>
+    <a-plane width="0.003" height="0.3" color="#aa8833" opacity="0.7" position="1.62 1.6 0"></a-plane>
+    <a-plane width="0.3" height="0.003" color="#aa8833" opacity="0.7" position="-1.5 -1.72 0"></a-plane>
+    <a-plane width="0.003" height="0.3" color="#aa8833" opacity="0.7" position="-1.62 -1.6 0"></a-plane>
+    <a-plane width="0.3" height="0.003" color="#aa8833" opacity="0.7" position="1.5 -1.72 0"></a-plane>
+    <a-plane width="0.003" height="0.3" color="#aa8833" opacity="0.7" position="1.62 -1.6 0"></a-plane>
+    <a-text value="✦ Leaderboard ✦" align="center" position="0 1.50 0.01" color="#ffeeaa" width="6.0" font="mozillavr"></a-text>
+    <a-text id="leaderboardDiffText" value="Easy Mode" align="center" position="0 1.22 0.01" color="#6899cc" width="3.0"></a-text>
+    <a-plane width="2.4" height="0.003" color="#aa8833" opacity="0.5" position="0 1.10 0.01"></a-plane>
+    <a-text value="RANK" align="left" position="-1.35 0.96 0.01" color="#4a7aaa" width="2.5"></a-text>
+    <a-text value="NAME" align="left" position="-0.55 0.96 0.01" color="#4a7aaa" width="2.5"></a-text>
+    <a-text value="SCORE" align="right" position="1.35 0.96 0.01" color="#4a7aaa" width="2.5"></a-text>
+    <a-plane width="2.8" height="0.003" color="#2a4a7a" opacity="0.6" position="0 0.86 0.01"></a-plane>
+    <a-entity id="leaderboardEntries" position="0 0 0.01"></a-entity>
+    <a-plane id="leaderboardMenuBtn" class="click-disabled" width="1.6" height="0.32" color="#1a3560" opacity="0.95" position="0 -1.55 0.01" leaderboard-menu>
+      <a-text value="↩  Back to Menu" align="center" position="0 0 0.015" color="#aaccff" width="3.2"></a-text>
+      <a-plane width="1.64" height="0.36" color="#2255aa" opacity="0.15" position="0 0 -0.005"
+        animation="property: material.opacity; from: 0.1; to: 0.25; dur: 1200; dir: alternate; loop: true; easing: easeInOutSine"></a-plane>
+    </a-plane>
+  </a-entity>
+
+  <a-entity id="celebrationParticles"></a-entity>
+</a-scene>
+
+<script>
+// ── Splash stars + shooting stars ────────────────────────────────
+(function(){
+  var wrap = document.getElementById('splashStars');
+  for (var i = 0; i < 160; i++) {
+    var s = document.createElement('div');
+    s.className = 'splash-star';
+    var size = Math.random() < 0.08 ? '3px' : Math.random() < 0.25 ? '2px' : '1px';
+    s.style.cssText = 'left:'+Math.random()*100+'%;top:'+Math.random()*100+'%;--dur:'+(1.5+Math.random()*3).toFixed(2)+'s;animation-delay:'+(Math.random()*3).toFixed(2)+'s;opacity:'+(0.1+Math.random()*0.5).toFixed(2)+';width:'+size+';height:'+size+';';
+    wrap.appendChild(s);
+  }
+  for (var j = 0; j < 3; j++) {
+    var sh = document.createElement('div');
+    sh.className = 'shooting-star';
+    sh.style.cssText = 'top:'+(10+Math.random()*40)+'%;left:'+(Math.random()*60)+'%;--shoot-dur:'+(4+Math.random()*6).toFixed(1)+'s;animation-delay:'+(j*3+Math.random()*2).toFixed(1)+'s;transform:rotate('+(15+Math.random()*20)+'deg);';
+    wrap.appendChild(sh);
+  }
+})();
+
+window.addEventListener('load', function() {
+  setTimeout(function() {
+    var fs = document.getElementById('flashScreen');
+    fs.classList.add('fade-out');
+    setTimeout(function() {
+      fs.style.display = 'none';
+      setPanelActive('mainMenu', true);
+    }, 2600);
+  }, 3200);
+});
+
+// ── Ambient 3D particles ─────────────────────────────────────────
+(function(){
+  var scene = document.querySelector('a-scene');
+  scene.addEventListener('loaded', function() {
+    var container = document.getElementById('ambientParticles');
+    for (var i = 0; i < 40; i++) {
+      var p = document.createElement('a-sphere');
+      var px = (Math.random()-0.5)*20;
+      var py = 1 + Math.random()*6;
+      var pz = -3 - Math.random()*20;
+      var size = 0.015 + Math.random()*0.03;
+      var dur = 4000 + Math.random()*6000;
+      p.setAttribute('radius', String(size));
+      p.setAttribute('material', 'shader: flat; color: #aaccff; opacity: '+(0.15+Math.random()*0.35).toFixed(2)+'; transparent: true');
+      p.setAttribute('position', px+' '+py+' '+pz);
+      p.setAttribute('animation', 'property: position; from: '+px+' '+py+' '+pz+'; to: '+px+' '+(py+0.3+Math.random()*0.5).toFixed(2)+' '+pz+'; dur: '+Math.round(dur)+'; dir: alternate; loop: true; easing: easeInOutSine');
+      p.setAttribute('animation__opacity', 'property: material.opacity; from: '+(0.1+Math.random()*0.2).toFixed(2)+'; to: '+(0.3+Math.random()*0.3).toFixed(2)+'; dur: '+Math.round(dur*0.8)+'; dir: alternate; loop: true; easing: easeInOutSine; delay: '+Math.round(Math.random()*2000));
+      container.appendChild(p);
+    }
+  });
+})();
+
+// ── BG music ─────────────────────────────────────────────────────
+var bgMusicEl = document.getElementById('bgMusic');
+bgMusicEl.loop = true;
+bgMusicEl.volume = 0.28;
+var bgMusicStarted = false;
+
+function tryStartBgMusic() {
+  if (!gameState.musicEnabled || bgMusicStarted) return;
+  bgMusicEl.play().then(function() { bgMusicStarted = true; }).catch(function(e) { console.warn('BG Music:', e); });
+}
+
+// ── Fake leaderboard data ────────────────────────────────────────
+var FAKE_LEADERBOARD = {
+  easy: [
+    { name: 'Sophia', score: 4800 },
+    { name: 'Liam', score: 4200 },
+    { name: 'Olivia', score: 3950 },
+    { name: 'Noah', score: 3600 },
+    { name: 'Emma', score: 3100 },
+    { name: 'James', score: 2750 },
+    { name: 'Mia', score: 2400 },
+    { name: 'Ethan', score: 2050 },
+    { name: 'Charlotte', score: 1700 }
+  ],
+  hard: [
+    { name: 'Sophia', score: 5600 },
+    { name: 'Liam', score: 5100 },
+    { name: 'Olivia', score: 4700 },
+    { name: 'Noah', score: 4200 },
+    { name: 'Emma', score: 3800 },
+    { name: 'James', score: 3300 },
+    { name: 'Mia', score: 2900 },
+    { name: 'Ethan', score: 2500 },
+    { name: 'Charlotte', score: 2100 }
+  ]
+};
+
+// ── Game state ───────────────────────────────────────────────────
+var gameState = {
+  difficulty: 'easy',
+  currentLevel: 1,
+  correctSequence: [],
+  currentStep: 0,
+  trackerCircles: [],
+  starsLit: 0,
+  musicEnabled: false,
+  musicVolume: 50,
+  levelScore: 0,
+  totalScore: 0,
+  timerSeconds: 60,
+  timerInterval: null,
+  timerRunning: false,
+  levels: {
+    easy: {
+      1: { name: 'Canis Minor', sequence: [1,2], stars: 2, image: '#constellationImgCanisMinor' },
+      2: { name: 'Apus', sequence: [1,2,3,4], stars: 4, image: '#constellationImgApus' }
+    },
+    hard: {
+      1: {
+        name: 'Crux', sequence: [1,4,2,3], stars: 4, image: '#constellationImgCrux',
+        starPositions: [
+          { x: 0.0, y: 3.15, z: -5.0 }, { x: 0.0, y: 1.55, z: -5.0 },
+          { x: -0.9, y: 2.55, z: -5.0 }, { x: 0.9, y: 2.55, z: -5.0 },
+        ],
+        lines: [[1,2], [3,4]]
+      },
+      2: { name: 'Lynx', sequence: [1,2,3,4,5,6,7,8], stars: 8, image: '#constellationImgLynx' }
+    }
+  }
+};
+
+var scene = document.querySelector('a-scene');
+
+// ── Sound helpers ────────────────────────────────────────────────
+function playSound(assetId, volume) {
+  volume = volume || 0.6;
+  var el = document.getElementById(assetId.replace('#',''));
+  if (!el) return;
+  var clone = el.cloneNode();
+  clone.volume = volume;
+  clone.play().catch(function(){});
+}
+function playButtonClick() { playSound('#buttonClick', 0.5); }
+
+var STAR_COLORS = [
+  { emissive: '#ffcc44', emissiveBright: '#ffe066', text: '#ffeeaa', light: '#ffaa22', halo: '#ffdd66' },
+  { emissive: '#44aaff', emissiveBright: '#66ccff', text: '#aaddff', light: '#2288ff', halo: '#55bbff' },
+  { emissive: '#ff8844', emissiveBright: '#ffaa66', text: '#ffccaa', light: '#ff6622', halo: '#ff9955' },
+  { emissive: '#44ffcc', emissiveBright: '#66ffdd', text: '#aaffee', light: '#22ddaa', halo: '#55ffcc' },
+  { emissive: '#cc88ff', emissiveBright: '#ddaaff', text: '#eeccff', light: '#aa44ff', halo: '#cc99ff' },
+  { emissive: '#ffee44', emissiveBright: '#fff566', text: '#fff5aa', light: '#ffcc00', halo: '#ffee66' },
+  { emissive: '#44ccff', emissiveBright: '#66ddff', text: '#aaeeff', light: '#22aaff', halo: '#55ccff' },
+  { emissive: '#ff44cc', emissiveBright: '#ff66dd', text: '#ffaaee', light: '#ff22aa', halo: '#ff55cc' },
+];
+
+function setPanelActive(panelId, active) {
+  var panel = document.getElementById(panelId);
+  if (!panel) return;
+  panel.setAttribute('visible', active);
+  var items = panel.querySelectorAll('.clickable, .click-disabled');
+  items.forEach(function(item) {
+    if (active) { item.classList.add('clickable'); item.classList.remove('click-disabled'); }
+    else { item.classList.remove('clickable'); item.classList.add('click-disabled'); }
+  });
+}
+
+function setPopupImage(srcSelector) {
+  var imgEl = document.getElementById('popupImage');
+  imgEl.setAttribute('src', srcSelector);
+  var assetId = srcSelector.replace('#', '');
+  var assetImg = document.getElementById(assetId);
+  if (assetImg && assetImg.naturalWidth && assetImg.naturalHeight) { applyImageSize(imgEl, assetImg); }
+  else {
+    imgEl.setAttribute('width', '1.3'); imgEl.setAttribute('height', '0.85');
+    if (assetImg) { assetImg.addEventListener('load', function onLoad() { assetImg.removeEventListener('load', onLoad); applyImageSize(imgEl, assetImg); }); }
+  }
+}
+function applyImageSize(imgEl, assetImg) {
+  var ratio = assetImg.naturalWidth / assetImg.naturalHeight;
+  var maxW = 1.5, maxH = 0.9, w, h;
+  if (ratio > maxW / maxH) { w = maxW; h = maxW / ratio; } else { h = maxH; w = maxH * ratio; }
+  imgEl.setAttribute('width', w.toFixed(3)); imgEl.setAttribute('height', h.toFixed(3));
+}
+
+function spawnCelebration() {
+  var container = document.getElementById('celebrationParticles');
+  while (container.firstChild) container.removeChild(container.firstChild);
+  var colors = ['#ffdd44','#44aaff','#ff6644','#44ffaa','#cc88ff','#ffaa22','#66ccff','#ff44aa'];
+  for (var i = 0; i < 30; i++) {
+    var p = document.createElement('a-sphere');
+    var angle = Math.random() * Math.PI * 2;
+    var spread = 1.5 + Math.random() * 2.5;
+    var px = Math.cos(angle) * spread * 0.4;
+    var py = 2.5 + Math.random() * 2;
+    var pz = -2.5 - Math.random() * 2;
+    var endY = py + 1 + Math.random() * 2;
+    var endX = px + (Math.random() - 0.5) * 3;
+    var dur = 2000 + Math.random() * 2000;
+    p.setAttribute('radius', String(0.02 + Math.random() * 0.04));
+    p.setAttribute('material', 'shader: flat; color: '+colors[Math.floor(Math.random()*colors.length)]+'; opacity: 0.9; transparent: true');
+    p.setAttribute('position', px+' '+py+' '+pz);
+    p.setAttribute('animation', 'property: position; to: '+endX.toFixed(2)+' '+endY.toFixed(2)+' '+(pz-1).toFixed(2)+'; dur: '+Math.round(dur)+'; easing: easeOutQuad');
+    p.setAttribute('animation__fade', 'property: material.opacity; from: 0.9; to: 0; dur: '+Math.round(dur)+'; easing: easeInQuad');
+    p.setAttribute('animation__scale', 'property: scale; from: 1 1 1; to: 0.1 0.1 0.1; dur: '+Math.round(dur)+'; easing: easeInQuad');
+    container.appendChild(p);
+  }
+  setTimeout(function() { while (container.firstChild) container.removeChild(container.firstChild); }, 5000);
+}
+
+function spawnFloatingText(text, color, worldPos) {
+  var container = document.getElementById('floatingTextContainer');
+  var entity = document.createElement('a-text');
+  entity.setAttribute('value', text); entity.setAttribute('color', color);
+  entity.setAttribute('align', 'center'); entity.setAttribute('width', '4');
+  entity.setAttribute('position', worldPos.x + ' ' + worldPos.y + ' ' + worldPos.z);
+  entity.setAttribute('look-at', '[camera]');
+  entity.setAttribute('animation', 'property: position; to: ' + worldPos.x + ' ' + (worldPos.y + 1.0) + ' ' + worldPos.z + '; dur: 1200; easing: easeOutQuad');
+  entity.setAttribute('animation__fade', 'property: opacity; from: 1; to: 0; dur: 1200; easing: easeInQuad');
+  container.appendChild(entity);
+  setTimeout(function() { if (entity.parentNode) entity.parentNode.removeChild(entity); }, 1300);
+}
+
+// ── Timer ────────────────────────────────────────────────────────
+function startTimer() {
+  stopTimer(); gameState.timerSeconds = 60; gameState.timerRunning = true; updateTimerDisplay();
+  gameState.timerInterval = setInterval(function() {
+    if (!gameState.timerRunning) return;
+    gameState.timerSeconds--; updateTimerDisplay();
+    if (gameState.timerSeconds <= 0) { stopTimer(); onTimesUp(); }
+  }, 1000);
+}
+function stopTimer() {
+  gameState.timerRunning = false;
+  if (gameState.timerInterval) { clearInterval(gameState.timerInterval); gameState.timerInterval = null; }
+}
+function updateTimerDisplay() {
+  var mins = Math.floor(gameState.timerSeconds / 60);
+  var secs = gameState.timerSeconds % 60;
+  var display = '⏱ ' + mins + ':' + (secs < 10 ? '0' : '') + secs;
+  var timerEl = document.getElementById('timerText');
+  if (timerEl) {
+    timerEl.setAttribute('value', display);
+    if (gameState.timerSeconds <= 10) timerEl.setAttribute('color', '#ff3333');
+    else if (gameState.timerSeconds <= 20) timerEl.setAttribute('color', '#ff6633');
+    else timerEl.setAttribute('color', '#ff9966');
+  }
+}
+function updateScoreDisplay() {
+  var scoreEl = document.getElementById('scoreText');
+  var totalEl = document.getElementById('totalScoreText');
+  if (scoreEl) scoreEl.setAttribute('value', 'Score: ' + gameState.levelScore);
+  if (totalEl) totalEl.setAttribute('value', 'Total: ' + gameState.totalScore);
+}
+function onTimesUp() {
+  playSound('#errorSound', 0.8);
+  document.getElementById('timesUpScoreText').setAttribute('value', 'Level Score: ' + gameState.levelScore);
+  document.getElementById('timesUpTotalText').setAttribute('value', 'Total Score: ' + gameState.totalScore);
+  setPanelActive('gameDashboard', false); setPanelActive('starsContainer', false);
+  document.getElementById('constellationLines').setAttribute('visible', false);
+  setPanelActive('timesUpPopup', true);
+}
+
+// ── Volume slider helpers ────────────────────────────────────────
+function updateVolumeSliderVisual() {
+  var vol = gameState.musicVolume;
+  var trackWidth = 2.2;
+  var minX = -1.1; // left edge
+  // knob positions: 25% -> -0.55, 50% -> 0, 75% -> 0.55, 100% -> 1.1
+  var knobX = minX + (vol / 100) * trackWidth;
+  var fillWidth = (vol / 100) * trackWidth;
+  var fillX = minX + fillWidth / 2;
+
+  var knob = document.getElementById('volKnob');
+  var fill = document.getElementById('volFill');
+  var percent = document.getElementById('volPercent');
+
+  if (knob) knob.setAttribute('position', knobX + ' 0 0.006');
+  if (fill) {
+    fill.setAttribute('width', String(fillWidth));
+    fill.setAttribute('position', fillX + ' 0 0.002');
+  }
+  if (percent) percent.setAttribute('value', vol + '%');
+
+  // Update overlay visibility
+  var overlay = document.getElementById('volOverlay');
+  if (overlay) overlay.setAttribute('visible', !gameState.musicEnabled);
+
+  // Apply volume
+  bgMusicEl.volume = (vol / 100) * 0.55; // max 0.55
+}
+
+// ── Leaderboard ──────────────────────────────────────────────────
+function showLeaderboard() {
+  var diff = gameState.difficulty;
+  var fakeData = FAKE_LEADERBOARD[diff].slice();
+  var playerEntry = { name: 'A Park', score: gameState.totalScore, isPlayer: true };
+  fakeData.push(playerEntry);
+  fakeData.sort(function(a, b) { return b.score - a.score; });
+  fakeData = fakeData.slice(0, 10);
+  var diffLabel = diff === 'easy' ? 'Easy Mode' : 'Hard Mode';
+  document.getElementById('leaderboardDiffText').setAttribute('value', diffLabel);
+  var container = document.getElementById('leaderboardEntries');
+  while (container.firstChild) container.removeChild(container.firstChild);
+  var startY = 0.74, rowHeight = 0.22;
+  for (var i = 0; i < fakeData.length; i++) {
+    var entry = fakeData[i], yPos = startY - (i * rowHeight);
+    var isPlayer = entry.isPlayer || false;
+    var nameColor = isPlayer ? '#ffeeaa' : '#c0d0e8';
+    var scoreColor = isPlayer ? '#ffdd66' : '#88aacc';
+    var rankColor = isPlayer ? '#ffcc44' : '#6899cc';
+    if (isPlayer) {
+      var highlight = document.createElement('a-plane');
+      highlight.setAttribute('width', '2.8'); highlight.setAttribute('height', '0.19');
+      highlight.setAttribute('color', '#2a4a1a'); highlight.setAttribute('opacity', '0.35');
+      highlight.setAttribute('position', '0 ' + yPos + ' -0.002');
+      container.appendChild(highlight);
+    }
+    var rankText = document.createElement('a-text');
+    var rankLabel = '#' + (i + 1);
+    if (i === 0) rankLabel = '🥇'; else if (i === 1) rankLabel = '🥈'; else if (i === 2) rankLabel = '🥉';
+    rankText.setAttribute('value', rankLabel); rankText.setAttribute('align', 'left');
+    rankText.setAttribute('position', '-1.35 ' + yPos + ' 0');
+    rankText.setAttribute('color', rankColor); rankText.setAttribute('width', '2.5');
+    container.appendChild(rankText);
+    var nameText = document.createElement('a-text');
+    var displayName = isPlayer ? '► ' + entry.name : entry.name;
+    nameText.setAttribute('value', displayName); nameText.setAttribute('align', 'left');
+    nameText.setAttribute('position', '-0.55 ' + yPos + ' 0');
+    nameText.setAttribute('color', nameColor); nameText.setAttribute('width', '2.5');
+    container.appendChild(nameText);
+    var scoreText = document.createElement('a-text');
+    scoreText.setAttribute('value', String(entry.score)); scoreText.setAttribute('align', 'right');
+    scoreText.setAttribute('position', '1.35 ' + yPos + ' 0');
+    scoreText.setAttribute('color', scoreColor); scoreText.setAttribute('width', '2.5');
+    container.appendChild(scoreText);
+    if (i < fakeData.length - 1) {
+      var sep = document.createElement('a-plane');
+      sep.setAttribute('width', '2.6'); sep.setAttribute('height', '0.002');
+      sep.setAttribute('color', '#1a2a44'); sep.setAttribute('opacity', '0.5');
+      sep.setAttribute('position', '0 ' + (yPos - 0.11) + ' 0');
+      container.appendChild(sep);
+    }
+  }
+  setPanelActive('successPopup', false); setPanelActive('gameDashboard', false);
+  setPanelActive('starsContainer', false);
+  document.getElementById('constellationLines').setAttribute('visible', false);
+  var celeb = document.getElementById('celebrationParticles');
+  while (celeb.firstChild) celeb.removeChild(celeb.firstChild);
+  setPanelActive('leaderboardPopup', true);
+}
+
+// ── A-Frame Components ───────────────────────────────────────────
+AFRAME.registerComponent('look-at', {
+  schema: { type: 'selector' },
+  tick: function() {
+    if (this.data) { var target = this.data.object3D; if (target) this.el.object3D.lookAt(target.getWorldPosition(new THREE.Vector3())); }
+  }
+});
+
+AFRAME.registerComponent('btn-hover', {
+  schema: { hoverColor:{type:'string',default:'#ffffff'}, baseColor:{type:'string',default:'#333333'} },
+  init: function() {
+    var el = this.el, d = this.data;
+    el.addEventListener('mouseenter', function() { el.setAttribute('color', d.hoverColor); el.setAttribute('scale', '1.06 1.06 1.06'); });
+    el.addEventListener('mouseleave', function() { el.setAttribute('color', d.baseColor); el.setAttribute('scale', '1 1 1'); });
+  }
+});
+
+AFRAME.registerComponent('open-options', {
+  init: function() {
+    this.el.setAttribute('btn-hover','hoverColor:#225580; baseColor:#1a3560');
+    this.el.addEventListener('click', function() {
+      playButtonClick();
+      setPanelActive('mainMenu', false);
+      // Sync options UI with current state
+      updateOptionsUI();
+      setPanelActive('optionsPanel', true);
+    });
+  }
+});
+
+AFRAME.registerComponent('opt-toggle-difficulty', {
+  init: function() {
+    var el = this.el;
+    el.setAttribute('btn-hover','hoverColor:#25883a; baseColor:#1a5c28');
+    el.addEventListener('click', function() {
+      playButtonClick();
+      var t = document.getElementById('optDifficultyText');
+      if (gameState.difficulty === 'easy') {
+        gameState.difficulty = 'hard'; t.setAttribute('value','🔥 Hard');
+        el.setAttribute('color','#7a1c1c'); el.setAttribute('btn-hover','hoverColor:#aa2828; baseColor:#7a1c1c');
+      } else {
+        gameState.difficulty = 'easy'; t.setAttribute('value','🌟 Easy');
+        el.setAttribute('color','#1a5c28'); el.setAttribute('btn-hover','hoverColor:#25883a; baseColor:#1a5c28');
+      }
+    });
+  }
+});
+
+AFRAME.registerComponent('opt-toggle-music', {
+  init: function() {
+    var el = this.el;
+    el.setAttribute('btn-hover','hoverColor:#225580; baseColor:#1a3560');
+    el.addEventListener('click', function() {
+      playButtonClick();
+      var t = document.getElementById('optMusicText');
+      if (gameState.musicEnabled) {
+        bgMusicEl.pause(); t.setAttribute('value','Off'); gameState.musicEnabled = false;
+      } else {
+        gameState.musicEnabled = true; tryStartBgMusic();
+        if (bgMusicEl.paused) bgMusicEl.play().catch(function(){});
+        t.setAttribute('value','On');
+      }
+      updateVolumeSliderVisual();
+    });
+  }
+});
+
+AFRAME.registerComponent('vol-set', {
+  schema: { level: { type: 'int', default: 50 } },
+  init: function() {
+    var el = this.el, data = this.data;
+    el.addEventListener('click', function() {
+      if (!gameState.musicEnabled) return;
+      playButtonClick();
+      gameState.musicVolume = data.level;
+      updateVolumeSliderVisual();
+    });
+  }
+});
+
+AFRAME.registerComponent('opt-back-menu', {
+  init: function() {
+    this.el.setAttribute('btn-hover','hoverColor:#225580; baseColor:#1a3560');
+    this.el.addEventListener('click', function() {
+      playButtonClick();
+      setPanelActive('optionsPanel', false);
+      setPanelActive('mainMenu', true);
+    });
+  }
+});
+
+AFRAME.registerComponent('play-game', {
+  init: function() {
+    this.el.setAttribute('btn-hover','hoverColor:#26834e; baseColor:#1a5c3a');
+    this.el.addEventListener('click', function() { playButtonClick(); startGame(); });
+  }
+});
+
+AFRAME.registerComponent('quit-game', {
+  init: function() {
+    this.el.setAttribute('btn-hover','hoverColor:#882222; baseColor:#5c1a1a');
+    this.el.addEventListener('click', function() {
+      playButtonClick();
+      if (scene.is('vr-mode')) scene.exitVR();
+      alert('Thanks for playing Stellar Chimes! Close the tab to exit.');
+    });
+  }
+});
+
+AFRAME.registerComponent('play-melody', {
+  init: function() {
+    this.el.setAttribute('btn-hover','hoverColor:#225580; baseColor:#1a3560');
+    this.el.addEventListener('click', function() {
+      playButtonClick();
+      var seq = gameState.correctSequence; if (!seq.length) return;
+      seq.forEach(function(starNum, i) {
+        setTimeout(function() {
+          playSound('#note' + starNum, 0.7);
+          var starEl = document.getElementById('star' + starNum);
+          if (starEl) {
+            var sp = starEl.querySelector('.star-sphere');
+            if (sp) {
+              var col = STAR_COLORS[(starNum - 1) % STAR_COLORS.length];
+              sp.setAttribute('material', 'shader: flat; color: #ffffff; opacity: 1.0');
+              sp.setAttribute('scale', '1.4 1.4 1.4');
+              setTimeout(function() { sp.setAttribute('material', 'shader: flat; color: '+col.emissive+'; opacity: 0.92'); sp.setAttribute('scale', '1 1 1'); }, 380);
+            }
+          }
+        }, i * 520);
+      });
+    });
+  }
+});
+
+AFRAME.registerComponent('reset-sequence', {
+  init: function() {
+    this.el.setAttribute('btn-hover','hoverColor:#602020; baseColor:#3c1818');
+    this.el.addEventListener('click', function() { playButtonClick(); resetSequence(); });
+  }
+});
+
+AFRAME.registerComponent('next-level', {
+  init: function() {
+    this.el.setAttribute('btn-hover','hoverColor:#26834e; baseColor:#1a5c3a');
+    this.el.addEventListener('click', function() {
+      playButtonClick(); setPanelActive('successPopup', false);
+      if (gameState.currentLevel === 1) { gameState.currentLevel = 2; startLevel(2); }
+      else { showLeaderboard(); }
+    });
+  }
+});
+
+AFRAME.registerComponent('timesup-menu', {
+  init: function() {
+    this.el.setAttribute('btn-hover','hoverColor:#882222; baseColor:#5c1a1a');
+    this.el.addEventListener('click', function() { playButtonClick(); setPanelActive('timesUpPopup', false); backToMenu(); });
+  }
+});
+
+AFRAME.registerComponent('leaderboard-menu', {
+  init: function() {
+    this.el.setAttribute('btn-hover','hoverColor:#225580; baseColor:#1a3560');
+    this.el.addEventListener('click', function() { playButtonClick(); setPanelActive('leaderboardPopup', false); backToMenu(); });
+  }
+});
+
+AFRAME.registerComponent('star-node', {
+  schema: { order:{type:'int'}, note:{type:'string'} },
+  init: function() {
+    var el = this.el, data = this.data;
+    var col = STAR_COLORS[(data.order - 1) % STAR_COLORS.length];
+    el.addEventListener('mouseenter', function() { el.setAttribute('scale','1.4 1.4 1.4'); el.setAttribute('material','shader: flat; color: #ffffff; opacity: 1.0'); });
+    el.addEventListener('mouseleave', function() { el.setAttribute('scale','1 1 1'); el.setAttribute('material','shader: flat; color: '+col.emissive+'; opacity: 0.92'); });
+    el.addEventListener('click', function() {
+      playSound(data.note, 0.75);
+      el.setAttribute('material','shader: flat; color: #ffffff; opacity: 1.0');
+      el.setAttribute('scale','1.5 1.5 1.5');
+      setTimeout(function() { el.setAttribute('material','shader: flat; color: '+col.emissive+'; opacity: 0.92'); el.setAttribute('scale','1 1 1'); }, 380);
+      handleStarClick(data.order);
+    });
+  }
+});
+
+// ── Options UI sync ──────────────────────────────────────────────
+function updateOptionsUI() {
+  var diffText = document.getElementById('optDifficultyText');
+  var diffBtn = document.getElementById('optDifficultyToggle');
+  if (gameState.difficulty === 'easy') {
+    diffText.setAttribute('value', '🌟 Easy');
+    diffBtn.setAttribute('color', '#1a5c28');
+    diffBtn.setAttribute('btn-hover','hoverColor:#25883a; baseColor:#1a5c28');
+  } else {
+    diffText.setAttribute('value', '🔥 Hard');
+    diffBtn.setAttribute('color', '#7a1c1c');
+    diffBtn.setAttribute('btn-hover','hoverColor:#aa2828; baseColor:#7a1c1c');
+  }
+  var musicText = document.getElementById('optMusicText');
+  musicText.setAttribute('value', gameState.musicEnabled ? 'On' : 'Off');
+  updateVolumeSliderVisual();
+}
+
+// ── Game Functions ───────────────────────────────────────────────
+function startGame() {
+  setPanelActive('mainMenu', false); setPanelActive('gameDashboard', true); setPanelActive('starsContainer', true);
+  gameState.currentLevel = 1; gameState.totalScore = 0; gameState.levelScore = 0;
+  updateScoreDisplay(); startLevel(1);
+}
+
+function startLevel(levelNum) {
+  var ld = gameState.levels[gameState.difficulty][levelNum];
+  gameState.correctSequence = ld.sequence; gameState.currentStep = 0; gameState.starsLit = 0; gameState.levelScore = 0;
+  playSound('#levelStart', 0.6);
+  document.getElementById('refName').setAttribute('value', ld.name);
+  setPopupImage(ld.image);
+  document.getElementById('popupName').setAttribute('value', '✦ ' + ld.name + ' ✦');
+  document.getElementById('nextBtnText').setAttribute('value', levelNum === 2 ? 'View Leaderboard  →' : 'Next Level  →');
+  document.getElementById('progressText').setAttribute('value', '0 / ' + ld.sequence.length);
+  createStars(ld.stars); createTrackerCircles(ld.sequence.length);
+  setPanelActive('successPopup', false); setPanelActive('timesUpPopup', false); setPanelActive('leaderboardPopup', false);
+  setPanelActive('gameDashboard', true); setPanelActive('starsContainer', true);
+  document.getElementById('constellationLines').setAttribute('visible', false);
+  resetSequence(); updateScoreDisplay(); startTimer();
+}
+
+function createStars(count) {
+  var container = document.getElementById('starsContainer');
+  while (container.firstChild) container.removeChild(container.firstChild);
+
+  var defaultPositions = [
+    { x: -1.0, y: 2.55, z: -5.0 },
+    { x:  1.0, y: 2.55, z: -5.0 },
+    { x: -2.0, y: 1.85, z: -4.5 },
+    { x:  2.0, y: 1.85, z: -4.5 },
+    { x:  0.0, y: 3.35, z: -5.5 },
+    { x: -1.8, y: 3.25, z: -5.2 },
+    { x:  1.8, y: 3.25, z: -5.2 },
+    { x:  0.0, y: 1.55, z: -4.5 },
+  ];
+
+  var ld = gameState.levels[gameState.difficulty][gameState.currentLevel];
+  var positions = ld.starPositions || defaultPositions;
+
+  for (var i = 1; i <= count; i++) {
+    var pos = positions[i - 1];
+    var col = STAR_COLORS[(i - 1) % STAR_COLORS.length];
+
+    var starEl = document.createElement('a-entity');
+    starEl.setAttribute('id', 'star' + i);
+    starEl.setAttribute('position', pos.x + ' ' + pos.y + ' ' + pos.z);
+
+    var yTo = (pos.y + 0.10).toFixed(2);
+    starEl.setAttribute('animation', 'property: position; from: '+pos.x+' '+pos.y+' '+pos.z+'; to: '+pos.x+' '+yTo+' '+pos.z+'; dur: '+(1800+i*220)+'; dir: alternate; loop: true; easing: easeInOutSine');
+
+    var sphere = document.createElement('a-sphere');
+    sphere.setAttribute('class', 'clickable star-sphere');
+    sphere.setAttribute('radius', '0.18');
+    sphere.setAttribute('material', 'shader: flat; color: '+col.emissive+'; opacity: 0.92');
+    sphere.setAttribute('star-node', 'order: '+i+'; note: #note'+i);
+    starEl.appendChild(sphere);
+
+    var haloInner = document.createElement('a-sphere');
+    haloInner.setAttribute('radius', '0.26');
+    haloInner.setAttribute('material', 'shader: flat; color: '+col.halo+'; transparent: true; opacity: 0.2; side: back');
+    haloInner.setAttribute('animation', 'property: material.opacity; from: 0.15; to: 0.3; dur: '+(1200+i*180)+'; dir: alternate; loop: true; easing: easeInOutSine');
+    starEl.appendChild(haloInner);
+
+    var haloOuter = document.createElement('a-sphere');
+    haloOuter.setAttribute('radius', '0.38');
+    haloOuter.setAttribute('material', 'shader: flat; color: '+col.emissive+'; transparent: true; opacity: 0.08; side: back');
+    haloOuter.setAttribute('animation', 'property: material.opacity; from: 0.05; to: 0.12; dur: '+(1600+i*200)+'; dir: alternate; loop: true; easing: easeInOutSine; delay: '+Math.round(i*100));
+    starEl.appendChild(haloOuter);
+
+    var sparkleOrbit = document.createElement('a-entity');
+    sparkleOrbit.setAttribute('animation', 'property: rotation; from: 0 0 0; to: 0 360 0; dur: '+(3000+i*500)+'; loop: true; easing: linear');
+    var sparkle = document.createElement('a-sphere');
+    sparkle.setAttribute('radius', '0.025');
+    sparkle.setAttribute('position', '0.3 0 0');
+    sparkle.setAttribute('material', 'shader: flat; color: #ffffff; opacity: 0.7; transparent: true');
+    sparkle.setAttribute('animation', 'property: material.opacity; from: 0.3; to: 0.9; dur: 800; dir: alternate; loop: true; easing: easeInOutSine');
+    sparkleOrbit.appendChild(sparkle);
+    starEl.appendChild(sparkleOrbit);
+
+    var light = document.createElement('a-entity');
+    light.setAttribute('light', 'type: point; intensity: 0.6; color: '+col.light+'; distance: 3.0');
+    starEl.appendChild(light);
+
+    container.appendChild(starEl);
+  }
+}
+
+function createTrackerCircles(num) {
+  var container = document.getElementById('trackerContainer');
+  while (container.firstChild) container.removeChild(container.firstChild);
+  gameState.trackerCircles = [];
+
+  var spacing = 0.22;
+  var startX = -((num - 1) * spacing) / 2;
+
+  for (var i = 0; i < num; i++) {
+    var starNum = gameState.correctSequence[i];
+    var starCol = STAR_COLORS[(starNum - 1) % STAR_COLORS.length];
+
+    var circle = document.createElement('a-circle');
+    circle.setAttribute('id', 'tracker' + (i + 1));
+    circle.setAttribute('color', '#1a2a44');
+    circle.setAttribute('radius', '0.072');
+    circle.setAttribute('material', 'side: double');
+    circle.setAttribute('position', (startX + i * spacing) + ' 0 0');
+
+    var ring = document.createElement('a-ring');
+    ring.setAttribute('radius-inner', '0.068');
+    ring.setAttribute('radius-outer', '0.076');
+    ring.setAttribute('color', starCol.emissive);
+    ring.setAttribute('material', 'side: double; opacity: 0.4; transparent: true');
+    ring.setAttribute('position', '0 0 0.003');
+    circle.appendChild(ring);
+
+    var dot = document.createElement('a-circle');
+    dot.setAttribute('class', 'tracker-dot');
+    dot.setAttribute('radius', '0.045');
+    dot.setAttribute('color', starCol.emissive);
+    dot.setAttribute('material', 'side: double; opacity: 0.45');
+    dot.setAttribute('position', '0 0 0.005');
+    circle.appendChild(dot);
+
+    container.appendChild(circle);
+    gameState.trackerCircles.push(circle);
+  }
+}
+
+function handleStarClick(order) {
+  if (gameState.currentStep >= gameState.correctSequence.length) return;
+  if (!gameState.timerRunning) return;
+  var expected = gameState.correctSequence[gameState.currentStep];
+
+  var starEl = document.getElementById('star' + order);
+  var starPos = { x: 0, y: 3, z: -5 };
+  if (starEl) {
+    var pos = starEl.getAttribute('position');
+    starPos = { x: pos.x, y: pos.y + 0.4, z: pos.z };
+  }
+
+  if (order === expected) {
+    gameState.levelScore += 10;
+    updateScoreDisplay();
+    gameState.currentStep++;
+    updateTracker();
+
+    spawnFloatingText('+10', '#44ccff', starPos);
+
+    if (gameState.currentStep === gameState.correctSequence.length) {
+      stopTimer();
+      var timeBonus = gameState.timerSeconds;
+      var finalLevelScore = gameState.levelScore * timeBonus;
+      gameState.totalScore += finalLevelScore;
+      updateScoreDisplay();
+
+      drawConstellationLines();
+      document.getElementById('constellationLines').setAttribute('visible', true);
+      setTimeout(function() {
+        playSound('#successSound', 0.8);
+        spawnCelebration();
+
+        document.getElementById('popupScoreText').setAttribute('value',
+          'Score: ' + gameState.levelScore + ' x ' + timeBonus + 's = ' + finalLevelScore + '  |  Total: ' + gameState.totalScore);
+
+        setPanelActive('successPopup', true);
+      }, 1620);
+    }
+  } else {
+    playSound('#errorSound', 0.65);
+
+    spawnFloatingText('Error!', '#ff4444', starPos);
+
+    var wrongStar = document.getElementById('star' + order);
+    if (wrongStar) {
+      var sp = wrongStar.querySelector('.star-sphere');
+      if (sp) {
+        sp.setAttribute('material', 'shader: flat; color: #ff2222; opacity: 1.0');
+        sp.setAttribute('scale', '1.3 1.3 1.3');
+        setTimeout(function() {
+          var c = STAR_COLORS[(order - 1) % STAR_COLORS.length];
+          sp.setAttribute('material', 'shader: flat; color: '+c.emissive+'; opacity: 0.92');
+          sp.setAttribute('scale', '1 1 1');
+        }, 400);
+      }
+    }
+    gameState.levelScore = 0;
+    updateScoreDisplay();
+    resetSequence();
+  }
+}
+
+function resetSequence() {
+  gameState.currentStep = 0;
+  updateTracker();
+}
+
+function updateTracker() {
+  gameState.trackerCircles.forEach(function(circle, i) {
+    var done = i < gameState.currentStep;
+    var isNext = i === gameState.currentStep;
+    circle.setAttribute('color', done ? '#33cc77' : '#1a2a44');
+    var dot = circle.querySelector('.tracker-dot');
+    if (dot) dot.setAttribute('material', 'side: double; opacity: ' + (done ? '1.0' : isNext ? '0.7' : '0.35'));
+    var ring = circle.querySelector('a-ring');
+    if (ring) ring.setAttribute('material', 'side: double; opacity: '+(done ? '0.9' : isNext ? '0.7' : '0.3')+'; transparent: true');
+  });
+  document.getElementById('progressText')
+    .setAttribute('value', gameState.currentStep + ' / ' + gameState.correctSequence.length);
+}
+
+function drawConstellationLines() {
+  var linesGroup = document.getElementById('constellationLines');
+  while (linesGroup.firstChild) linesGroup.removeChild(linesGroup.firstChild);
+
+  var ld = gameState.levels[gameState.difficulty][gameState.currentLevel];
+  var linePairs;
+
+  if (ld.lines) {
+    linePairs = ld.lines;
+  } else {
+    var seq = gameState.correctSequence;
+    linePairs = [];
+    for (var s = 0; s < seq.length - 1; s++) {
+      linePairs.push([seq[s], seq[s + 1]]);
+    }
+  }
+
+  for (var i = 0; i < linePairs.length; i++) {
+    (function(idx) {
+      var pair = linePairs[idx];
+      var starA = document.getElementById('star' + pair[0]);
+      var starB = document.getElementById('star' + pair[1]);
+      if (!starA || !starB) return;
+      var a = starA.getAttribute('position');
+      var b = starB.getAttribute('position');
+
+      var dx = b.x - a.x, dy = b.y - a.y, dz = b.z - a.z;
+      var dist = Math.sqrt(dx*dx + dy*dy + dz*dz);
+      var midX = (a.x + b.x) / 2, midY = (a.y + b.y) / 2, midZ = (a.z + b.z) / 2;
+
+      setTimeout(function() {
+        var wrapper = document.createElement('a-entity');
+        wrapper.setAttribute('position', midX + ' ' + midY + ' ' + midZ);
+
+        var core = document.createElement('a-cylinder');
+        core.setAttribute('radius', '0.03');
+        core.setAttribute('height', String(dist));
+        core.setAttribute('material', 'shader: flat; color: #bbddff; opacity: 0.95');
+        core.setAttribute('segments-radial', '6');
+        core.setAttribute('animation', 'property: material.opacity; from: 0; to: 0.95; dur: 400; easing: easeInQuad');
+        wrapper.appendChild(core);
+
+        var midGlow = document.createElement('a-cylinder');
+        midGlow.setAttribute('radius', '0.06');
+        midGlow.setAttribute('height', String(dist));
+        midGlow.setAttribute('material', 'shader: flat; color: #6699dd; opacity: 0.35; transparent: true');
+        midGlow.setAttribute('segments-radial', '6');
+        midGlow.setAttribute('animation', 'property: material.opacity; from: 0; to: 0.35; dur: 500; easing: easeInQuad');
+        wrapper.appendChild(midGlow);
+
+        var outerGlow = document.createElement('a-cylinder');
+        outerGlow.setAttribute('radius', '0.10');
+        outerGlow.setAttribute('height', String(dist));
+        outerGlow.setAttribute('material', 'shader: flat; color: #3366aa; opacity: 0.15; transparent: true');
+        outerGlow.setAttribute('segments-radial', '6');
+        outerGlow.setAttribute('animation', 'property: material.opacity; from: 0; to: 0.15; dur: 600; easing: easeInQuad');
+        wrapper.appendChild(outerGlow);
+
+        linesGroup.appendChild(wrapper);
+
+        setTimeout(function() {
+          if (wrapper.object3D) {
+            var dir = new THREE.Vector3(dx, dy, dz).normalize();
+            var up = new THREE.Vector3(0, 1, 0);
+            var quat = new THREE.Quaternion().setFromUnitVectors(up, dir);
+            wrapper.object3D.quaternion.copy(quat);
+          }
+        }, 50);
+
+      }, idx * 250);
+    })(i);
+  }
+}
+
+function backToMenu() {
+  stopTimer();
+  setPanelActive('gameDashboard', false);
+  setPanelActive('starsContainer', false);
+  setPanelActive('successPopup', false);
+  setPanelActive('timesUpPopup', false);
+  setPanelActive('leaderboardPopup', false);
+  setPanelActive('optionsPanel', false);
+  document.getElementById('constellationLines').setAttribute('visible', false);
+  var celeb = document.getElementById('celebrationParticles');
+  while (celeb.firstChild) celeb.removeChild(celeb.firstChild);
+  var floatContainer = document.getElementById('floatingTextContainer');
+  while (floatContainer.firstChild) floatContainer.removeChild(floatContainer.firstChild);
+  setPanelActive('mainMenu', true);
+}
+</script>
+</body>
+</html>
